@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from test import greet
 
 # Initialize the FastAPI app
 app = FastAPI()
@@ -49,6 +50,13 @@ async def greet_name(name: str = "Guest"):
     Greets a user by name. Defaults to "Guest" if no name is provided.
     """
     return {"message": f"Hello, {name}!"}
+
+@app.get("/greet/")
+async def greet_name_2(name: str = "Guest"):
+    """
+    Greets a user by name. Defaults to "Guest" if no name is provided.
+    """
+    return {"message": greet(name)}
 
 # --- How to run this application ---
 # 1. Save the code: Save this code as a Python file (e.g., `main.py`).

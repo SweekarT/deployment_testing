@@ -1,55 +1,80 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
 #from test import greet
 
 # Initialize the FastAPI app
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+# Define the input data model
+class UserInput(BaseModel):
+    question: str
+
+# Endpoint to accept input and return a response
+@app.post("/greet")
+def greet_user(user_input: UserInput):
+    response = fn_call(user_input.question)
+    return {
+        #"message": f"Hello {user_input.name}, you are {user_input.age} years old!"
+        "message" : f"Chatbot : {response}"
+    }
+
+def fn_call(input):
+    return "Hi" + str(input)
 # --- Define a Pydantic model for request body (optional, but good practice for POST/PUT) ---
-class Item(BaseModel):
-    name: str
-    description: str | None = None
-    price: float
-    tax: float | None = None
+# class Item(BaseModel):
+#     name: str
+#     description: str | None = None
+#     price: float
+#     tax: float | None = None
 
-# --- Root endpoint ---
-@app.get("/")
-async def read_root():
-    """
-    Returns a simple welcome message.
-    """
-    return {"message": "Hello, FastAPI!"}
+# # --- Root endpoint ---
+# @app.get("/")
+# async def read_root():
+#     """
+#     Returns a simple welcome message.
+#     """
+#     return {"message": "Hello, FastAPI!"}
 
-# --- Endpoint with a path parameter ---
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str | None = None):
-    """
-    Retrieves an item by its ID.
-    Optionally accepts a query parameter 'q'.
-    """
-    if q:
-        return {"item_id": item_id, "q": q, "message": f"You searched for item {item_id} with query '{q}'"}
-    return {"item_id": item_id, "message": f"This is item {item_id}"}
+# # --- Endpoint with a path parameter ---
+# @app.get("/items/{item_id}")
+# async def read_item(item_id: int, q: str | None = None):
+#     """
+#     Retrieves an item by its ID.
+#     Optionally accepts a query parameter 'q'.
+#     """
+#     if q:
+#         return {"item_id": item_id, "q": q, "message": f"You searched for item {item_id} with query '{q}'"}
+#     return {"item_id": item_id, "message": f"This is item {item_id}"}
 
-# --- Endpoint with a POST request body ---
-@app.post("/items/")
-async def create_item(item: Item):
-    """
-    Creates a new item using a Pydantic model for the request body.
-    """
-    item_dict = item.model_dump() # Convert Pydantic model to a dictionary
-    if item.tax:
-        price_with_tax = item.price * (1 + item.tax)
-        item_dict.update({"price_with_tax": price_with_tax})
-    return {"message": "Item created successfully!", "item": item_dict}
+# # --- Endpoint with a POST request body ---
+# @app.post("/items/")
+# async def create_item(item: Item):
+#     """
+#     Creates a new item using a Pydantic model for the request body.
+#     """
+#     item_dict = item.model_dump() # Convert Pydantic model to a dictionary
+#     if item.tax:
+#         price_with_tax = item.price * (1 + item.tax)
+#         item_dict.update({"price_with_tax": price_with_tax})
+#     return {"message": "Item created successfully!", "item": item_dict}
 
-# --- Example of a simple GET endpoint with a query parameter ---
-@app.get("/greet/")
-async def greet_name(name: str = "Guest"):
-    """
-    Greets a user by name. Defaults to "Guest" if no name is provided.
-    """
-    return {"message": f"Hello, {name}!"}
+# # --- Example of a simple GET endpoint with a query parameter ---
+# @app.get("/greet/")
+# async def greet_name(name: str = "Guest"):
+#     """
+#     Greets a user by name. Defaults to "Guest" if no name is provided.
+#     """
+#     return {"message": f"Hello, {name}!"}
 
 # @app.get("/greet/")
 # async def greet_name_2(name: str = "Guest"):
